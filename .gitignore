@@ -1,0 +1,4 @@
+node_modules
+npm_*
+static/*
+data/*
