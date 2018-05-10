@@ -43,7 +43,7 @@ module.exports = {
     devtool: '#source-map',
     plugins:[
         new CleanWebpackPlugin([
-            path.resolve(__dirname , './static'),
+            path.resolve(__dirname , './dist')
         ]),
         new webpack.optimize.SplitChunksPlugin({
             chunks: 'all',

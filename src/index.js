@@ -2,110 +2,126 @@
 
 const path = require('path');
 const fs = require('fs');
-
+const yamlFront = require('yaml-front-matter');
 const TreeWorker = require('tree-worker');
-const config = require('../config');
 
-let treeWorker = new TreeWorker();
+const treeWorker = new TreeWorker();
 
-/**
- * [getArticle 获取.md文档]
- * @param  {[Object]} articles [文章列表对象]
- * @return {[Array]}          [文章数组]
- */
-function getArticle(articles) {
-    console.log('=================== getArticle ==================================\n');
-    console.log('articles: ' , articles);
-    let arr = [];
-    for ( let name in articles ){
-        //获取markdown文章
-        if ( articles[name].type === 'S_IFREG' && ('' + articles[name].paths.ext).toLowerCase() === '.md' ){
-            arr.push({
-                path: articles[name].origin,
-                name: articles[name].paths.name
+module.exports = function pyramid(options = {}){
+
+    /**
+     * [isExtensionsFile 是否为相关文章]
+     * @param  {String}  ext [description]
+     * @return {Boolean}     [description]
+     */
+    function isExtensionsFile(ext = ''){
+        let extensions = Array.isArray(options.extensions) && options.extensions.length ? options.extensions : ['.md' , '.markdown'];
+
+        for ( let i = 0 ; i < extensions.length ; i++ ){
+            if ( extensions[i].toLowerCase() === ext.toLowerCase() ){
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * [getArticles 获取文档]
+     * @param  {[Object]} articles [文章列表对象]
+     * @return {[Array]}          [文章数组]
+     */
+    function getArticles(articles) {
+        let arr = [];
+        for ( let name in articles ){
+            //获取文章
+            if ( articles[name].type === 'S_IFREG' && isExtensionsFile(articles[name].paths.ext) ){
+                arr.push({
+                    path: articles[name].origin,
+                    name: articles[name].paths.name,
+                    date: articles[name].stats.mtime || articles[name].stats.ctime
+                });
+            }
+        }
+        return arr;
+    }
+    /**
+     * [readFile 读取文件]
+     * @param  {[type]} pt [description]
+     * @return {[type]}    [description]
+     */
+    function readFile(pt){
+        return new Promise((resolve ,reject)=>{
+            fs.readFile(pt , {encoding:options.encoding || 'utf-8'} , (err , data)=>{
+                if ( err ){
+                    return reject(err);
+                }
+                return resolve(data);
             });
-        }
-    }
-    return arr;
-}
-
-function readFile(pt){
-    return new Promise((resolve ,reject)=>{
-        fs.readFile(pt , {encoding:'utf-8'} , (err , data)=>{
-            if ( err ){
-                return reject(err);
-            }
-            return resolve(data);
         });
-    });
-}
-
-/**
- * [readArticleInformation 获取全部文章信息]
- * @param  {[Array]} articles [文章数组]
- * @return {[Array]}          [文章详情数组]
- */
-async function readArticleInformation(articles){
-    console.log('\n\n=================== readArticleInformation ==================================\n');
-    console.log('articles: ' , articles);
-
-    let arr = [];
-    for ( let i = 0 ; i < articles.length ; i++ ){
+    }
+    function getDate (article , defDate){
         try{
-            let result = await readFile(articles[i].path);
-            let header = {
-                categories: 'unkonw',
-                name: articles[i].name
-            };
-            let title = result.match(/(\r\n?|\n)title:(\s*[^\r\n]+)(\r\n?|\n)/i);
-            let date = result.match(/(\r\n?|\n)date:(\s*[^\r\n]+)(\r\n?|\n)/i);
-            let categories = result.match(/(\r\n?|\n)categor(ies|y):(\s*\[?[^\r\n]+\]?)(\r\n?|\n)/i);
-            let author = result.match(/(\r\n?|\n)author:(\s*[^\r\n]+)(\r\n?|\n)/i);
-            
-            if ( title && date && author && title[2] && date[2] && author[2] ){
-                header.title = ('' + title[2]).trim();
-                header.date = +new Date(('' + date[2]).trim());
-                header.author = ('' + author[2]).trim();
-            }else{
-                throw new Error('unkonw article title , author , date');
+            if ( article.date ){
+                return +new Date(article.date);
             }
-            if ( categories && categories[3] ){
-                header.categories = ('' + categories[3]).trim().replace(/^\[/, '').replace(/\]$/,'');
+            if ( /^\d{4}\-\d{1,2}\-\d{1,2}-/.test(article.lastName) ){
+                let names = article.lastName.split('-');
+                return +new Date(names[0] , names[1] , names[2]);
             }
-            arr.push(header);
         }catch(err){
-            console.error(`read article ${articles[i].path}  information error:  ${err}`);
+            console.error(`get ${article.lastName} file date is error: ${err}`);
+            return +new Date(defDate);
         }
     }
-
-    return arr;
-}
-
-function writeJsFile(articles){
-    return new Promise((resolve , reject)=>{
-        let str = 'module.exports=' + JSON.stringify(articles) + ';';
-        fs.writeFile(path.resolve(__dirname , config.dist) , str , (err)=>{
-            return err ? reject(err) : resolve(true);
+    function queryFixed(article , defDate = new Date()){
+        let realQuery = {};
+        realQuery.title = article.title;
+        let categories = article.categories || article.category || 'unkonw';
+        if ( !Array.isArray(categories) ){
+            categories = [categories];
+        }
+        realQuery.categories = categories;
+        realQuery.tags = article.tags || [];
+        realQuery.author = article.author || options.author || 'Owner';
+        realQuery.date = getDate(article , defDate);
+        return realQuery;
+    }
+    /**
+     * [parseArticles 获取全部文章信息]
+     * @param  {[Array]} articles [文章数组]
+     * @return {[Array]}          [文章详情数组]
+     */
+    async function parseArticles(articles){
+        let arr = [];
+        for ( let i = 0 ; i < articles.length ; i++ ){
+            try{
+                let article = yamlFront.loadFront(await readFile(articles[i].path));
+                article['__content'] = '';
+                article.lastName = articles[i].name;
+                arr.push(queryFixed(article , articles[i].date));
+            }catch(err){
+                console.error(`yamlFront parser article ${articles[i].path}  is error:  ${err}`);
+            }
+        }
+        return arr;
+    }
+    /**
+     * [writeFile 写入数据]
+     * @param  {[type]} articles [文章数据]
+     * @return {[type]}          [description]
+     */
+    function writeFile(articles){
+        return new Promise((resolve , reject)=>{
+            let str = 'module.exports=' + JSON.stringify(articles) + ';';
+            fs.writeFile(path.resolve(__dirname , '../articles.js') , str , (err)=>{
+                return err ? reject(err) : resolve(true);
+            });
         });
-    });
-}
+    }
 
-/**
- * [parseArticle 解析数据]
- * @param  {[Array]} articles [文章列表]
- * @return {[type]}          [description]
- */
-function parseArticle(articles){
-    console.log('\n\n=================== parseArticle ==================================\n');
-    console.log('articles: ' , articles);
-    return articles;
-}
-
-treeWorker.work(config.entryDir)
-    .then((that)=>that.stat)
-    .then(getArticle)
-    .then(readArticleInformation)
-    .then(parseArticle)
-    .then(writeJsFile)
-    .catch(err=>console.log(err));
-
+    return treeWorker.work(options.root)
+        .then((that)=>that.stat)
+        .then(getArticles)
+        .then(parseArticles)
+        .then(writeFile)
+        .catch(err=>console.error(err));
+};

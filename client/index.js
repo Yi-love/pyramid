@@ -7,7 +7,7 @@ import '../node_modules/tui-chart/dist/tui-chart.css';
 import {
   getYearsArticlesData , getMonthsArticlesData ,
   getYearsCategoriesData , getAuthorArticlesData,
-  getAuthorCategoryData} from './render';
+  getAuthorCategoryData} from '../render';
 
 function css(dom , attr) {
   return window.getComputedStyle(dom)[attr];
