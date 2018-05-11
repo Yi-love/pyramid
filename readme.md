@@ -36,20 +36,27 @@ module.exports = {
   root: 'E:\\git\\yi-love.github.io\\_posts', //bolg markdown file path
   extensions: [],  //ext file want read
   encoding: 'utf-8', //file encode
-  author:''  //no author file can set author default `Owner`
+  author:'',  //no author file can set author default `Owner`
+  webpack: {  // could use false return articles
+    mode: 'production',
+    watch: false,
+    output: {
+      path: path.resolve(process.cwd() , './static/dist'),
+      publicPath : './dist'
+    },
+    autoClear: true, //clean publicPath
+    filename: './../index.html', //resolve path is output.publicPath
+    hashFile: true
+  }
 };
 ```
 
-1. get all articles data.
+### 1. CI
 
+cmd:
 ```
-node index.js
-```
-
-2. build frontend html page.
-
-```
-webpack
+npm run start
 ```
 
-open `static/index.html`.
+open output path `index.html`.
+

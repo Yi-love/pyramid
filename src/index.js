@@ -8,7 +8,6 @@ const TreeWorker = require('tree-worker');
 const treeWorker = new TreeWorker();
 
 module.exports = function pyramid(options = {}){
-
     /**
      * [isExtensionsFile 是否为相关文章]
      * @param  {String}  ext [description]
@@ -113,7 +112,7 @@ module.exports = function pyramid(options = {}){
         return new Promise((resolve , reject)=>{
             let str = 'module.exports=' + JSON.stringify(articles) + ';';
             fs.writeFile(path.resolve(__dirname , '../articles.js') , str , (err)=>{
-                return err ? reject(err) : resolve(true);
+                return err ? reject(err) : resolve(articles);
             });
         });
     }
@@ -122,6 +121,5 @@ module.exports = function pyramid(options = {}){
         .then((that)=>that.stat)
         .then(getArticles)
         .then(parseArticles)
-        .then(writeFile)
-        .catch(err=>console.error(err));
+        .then(writeFile);
 };
