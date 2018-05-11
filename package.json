@@ -1,6 +1,6 @@
 {
   "name": "@cray/pyramid",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Statistics your blog data.",
   "main": "index.js",
   "dependencies": {
@@ -47,8 +47,5 @@
   "bugs": {
     "url": "https://github.com/Yi-love/pyramid/issues"
   },
-  "homepage": "https://github.com/Yi-love/pyramid#readme",
-  "bin": {
-    "pyramid": "index.js"
-  }
+  "homepage": "https://github.com/Yi-love/pyramid#readme"
 }
