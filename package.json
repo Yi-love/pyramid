@@ -1,6 +1,6 @@
 {
   "name": "@cray/pyramid",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Statistics your blog data.",
   "main": "index.js",
   "dependencies": {
@@ -27,6 +27,9 @@
     "url-loader": "^0.5.9",
     "webpack": "^4.6.0",
     "yaml-front-matter": "^4.0.0"
+  },
+  "bin": {
+    "pyramid": "./bin/index.js"
   },
   "scripts": {
     "start": "node pyramid.ci.js",
