@@ -52,7 +52,10 @@ module.exports = {
 };
 ```
 
-### 1. CI
+### 1. npm
+```
+npm install -save-dev @cray/pyramid
+```
 
 cmd:
 ```
@@ -61,3 +64,25 @@ npm run start
 
 open output path `index.html`.
 
+
+### 2. CI
+install:
+
+```
+npm install -g @cray/pyramid
+```
+
+cmd:
+```
+pyramid [configPath]
+```
+
+### 3. require
+
+```js
+const pyramid = require('@cray/pyramid');
+
+pramid([options]).then();
+```
+
+> options is default `pyramid.config.js`
