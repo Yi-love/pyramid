@@ -5,8 +5,9 @@ const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-module.exports = function(options){
+module.exports = function(options , articles = []){
     return {
         mode: options.mode,
         entry:{
@@ -44,6 +45,9 @@ module.exports = function(options){
         devtool: '#source-map',
         plugins:[
             options.autoClear ? new CleanWebpackPlugin([options.output.path]) : function(){},
+            new webpack.DefinePlugin({
+                ARTICLES: JSON.stringify(articles || [])
+            }),
             new webpack.optimize.SplitChunksPlugin({
                 chunks: 'all',
                 minSize: 30000,
@@ -60,9 +64,19 @@ module.exports = function(options){
                     }
                 }
             }),
+            options.mode === 'development' ? ()=>{} :
+            new UglifyJsPlugin({
+                uglifyOptions:{
+                    compress: {
+                        warnings: false,
+                        drop_console: true,
+                    }
+                }
+            }),
             new HtmlWebpackPlugin({
                 inject: true,
                 filename: options.filename,
+                blogName: options.blogName || '',
                 chunks: ['tui-chart' , 'index'],
                 template: path.resolve(__dirname , './client/index.html')
             }),

@@ -6,11 +6,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover" >
-  <title>博客数据统计报告</title>
+  <title><%= htmlWebpackPlugin.options.blogName %>博客数据统计报告</title>
 </head>
 <body>
   <div class="row body-container" id="body-container">
-    <h2>博客数据统计报告</h2>
+    <h2><%= htmlWebpackPlugin.options.blogName %>博客数据统计报告</h2>
   
     <h3>年度数据</h3>
     <div id="all-years"></div>

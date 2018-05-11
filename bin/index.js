@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const fs = require('fs');
 const pyramid = require('../index');
-const config = path.resolve('pyramid.config.js');
+let config = path.resolve('pyramid.config.js');
+
+if ( process.argv.length === 3 && process.argv[2] ) {
+  config = process.argv[2];
+}
 
 console.log(`pyramid want use config file: ${config}`);
 

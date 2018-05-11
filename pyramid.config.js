@@ -16,6 +16,7 @@ module.exports = {
     },
     autoClear: true, //clean publicPath
     filename: './../index.html', //resolve path is output.publicPath
-    hashFile: false
+    hashFile: true,
+    blogName: ''
   }
 };

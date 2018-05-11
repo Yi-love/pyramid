@@ -1,6 +1,5 @@
 'use strict';
 
-const path = require('path');
 const fs = require('fs');
 const yamlFront = require('yaml-front-matter');
 const TreeWorker = require('tree-worker');
@@ -57,6 +56,12 @@ module.exports = function pyramid(options = {}){
             });
         });
     }
+    /**
+     * [getDate 兼容不同日期规则的文章]
+     * @param  {[type]} article [description]
+     * @param  {[type]} defDate [description]
+     * @return {[type]}         [description]
+     */
     function getDate (article , defDate){
         try{
             if ( article.date ){
@@ -67,10 +72,16 @@ module.exports = function pyramid(options = {}){
                 return +new Date(names[0] , names[1] , names[2]);
             }
         }catch(err){
-            console.error(`get ${article.lastName} file date is error: ${err}`);
+            console.error(`get ${article.lastName} file date is error: ${JSON.stringify(err)}`);
             return +new Date(defDate);
         }
     }
+    /**
+     * [queryFixed 获取数据]
+     * @param  {[type]} article [description]
+     * @param  {Date}   defDate [description]
+     * @return {[type]}         [description]
+     */
     function queryFixed(article , defDate = new Date()){
         let realQuery = {};
         realQuery.title = article.title;
@@ -103,23 +114,6 @@ module.exports = function pyramid(options = {}){
         }
         return arr;
     }
-    /**
-     * [writeFile 写入数据]
-     * @param  {[type]} articles [文章数据]
-     * @return {[type]}          [description]
-     */
-    function writeFile(articles){
-        return new Promise((resolve , reject)=>{
-            let str = 'module.exports=' + JSON.stringify(articles) + ';';
-            fs.writeFile(path.resolve(__dirname , '../articles.js') , str , (err)=>{
-                return err ? reject(err) : resolve(articles);
-            });
-        });
-    }
 
-    return treeWorker.work(options.root)
-        .then((that)=>that.stat)
-        .then(getArticles)
-        .then(parseArticles)
-        .then(writeFile);
+    return treeWorker.work(options.root).then((that)=>that.stat).then(getArticles).then(parseArticles);
 };
