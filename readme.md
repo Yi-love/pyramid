@@ -2,6 +2,10 @@
 Statistics your blog data.
 > 获取博客文章，进行统计数据。
 
+
+# error please not use
+
+
 ## compatible（兼容的博文）
 `hexo` ,`jekyll` is ok.
 
