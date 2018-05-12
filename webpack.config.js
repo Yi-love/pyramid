@@ -11,7 +11,7 @@ module.exports = function(options , articles = []){
     return {
         mode: options.mode,
         entry:{
-            index:'./client/index.js'
+            pyramid:path.resolve(__dirname , './client/index.js')
         },
         module:{
             rules:[
@@ -39,12 +39,12 @@ module.exports = function(options , articles = []){
         },
         output:{
             filename: options.hashFile ? '[name]-[hash].js' : '[name].js?v=[hash]',
-            path:options.output.path,
-            publicPath:options.output.publicPath
+            path:options.cache,
+            publicPath:options.url
         },
         devtool: '#source-map',
         plugins:[
-            options.autoClear ? new CleanWebpackPlugin([options.output.path]) : function(){},
+            options.autoClear ? new CleanWebpackPlugin([options.cache]) : ()=>{},
             new webpack.DefinePlugin({
                 ARTICLES: JSON.stringify(articles || [])
             }),
@@ -75,9 +75,9 @@ module.exports = function(options , articles = []){
             }),
             new HtmlWebpackPlugin({
                 inject: true,
-                filename: options.filename,
+                filename: 'index.html',
                 blogName: options.blogName || '',
-                chunks: ['tui-chart' , 'index'],
+                chunks: ['tui-chart' , 'pyramid'],
                 template: path.resolve(__dirname , './client/index.html')
             }),
             new MiniCssExtractPlugin({ //提取css公共代码
