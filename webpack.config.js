@@ -42,7 +42,7 @@ module.exports = function(options , articles = []){
             path:options.cache,
             publicPath:options.url
         },
-        devtool: '#source-map',
+        devtool: options.mode === 'development' ? '#source-map' : false,
         plugins:[
             options.autoClear ? new CleanWebpackPlugin([options.cache]) : ()=>{},
             new webpack.DefinePlugin({
@@ -75,7 +75,7 @@ module.exports = function(options , articles = []){
             }),
             new HtmlWebpackPlugin({
                 inject: true,
-                filename: 'index.html',
+                filename: options.filename,
                 blogName: options.blogName || '',
                 chunks: ['tui-chart' , 'pyramid'],
                 template: path.resolve(__dirname , './client/index.html')

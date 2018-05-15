@@ -5,6 +5,7 @@ const webpackConfig = require('./webpack.config');
 const pyramid = require('./src');
 const webpack = require('webpack');
 const fs = require('fs');
+const rimraf = require('rimraf');
 const crypto = require('crypto');
 const TreeWorker = require('tree-worker');
 
@@ -17,12 +18,7 @@ const treeWorker = new TreeWorker();
  * @return {[type]}          [description]
  */
 function webpackRun(options , articles){
-  console.log(`${new Date}: [pyramid] run webpack ? ${!!options.webpack}`);
-  if ( !options.webpack ){
-    console.log(`${new Date}: [pyramid] only return articles. ${articles.length}`);
-    return articles;
-  }
-  console.log(`${new Date}: [pyramid] run webpack start with mode ${options.mode}!!! please waiting.....`);
+  console.log(`${new Date}: [pyramid] run webpack start with mode [${options.mode}] !!! please waiting.....`);
   return new Promise((resolve , reject)=>{
     webpack(webpackConfig(options , articles) , (error, stats)=>{
       if ( error || stats.hasErrors() ) {
@@ -68,7 +64,7 @@ function filtersFile(files){
  * @return {[type]}         [description]
  */
 function getCacheFiles(options) {
-  console.log(`${new Date} [pyramid] get cache files now. ${options.cache}`);
+  console.log(`${new Date}: [pyramid] get cache files now. ${options.cache}`);
   return treeWorker.work(options.cache).then((that)=>that.stat).then(filtersFile);
 }
 
@@ -79,7 +75,7 @@ function getCacheFiles(options) {
  * @return {[type]}        [description]
  */
 function copyFile(source , dist){
-  console.log(`${new Date} [pyramid] copy file ${source} to ${dist}`);
+  console.log(`${new Date}: [pyramid] copy file ${source} to ${dist}`);
   return new Promise((resolve , reject)=>{
     let rr = fs.createReadStream(source);
     let ww = fs.createWriteStream(dist);
@@ -114,7 +110,7 @@ async function copyFiles(files = [] ,dist){
   return arr;
 }
 function createDir(dirName){
-  console.log(`${new Date} [pyramid] create dir now. view : ${dirName}`);
+  console.log(`${new Date}: [pyramid] create dir now. view : ${dirName}`);
   
   return new Promise((resolve , reject)=>{
     fs.mkdir(dirName , (error)=>{
@@ -132,7 +128,7 @@ function createDir(dirName){
  * @return {[type]}          [description]
  */
 async function copyFilesToDist(options , files){
-  console.log(`${new Date} [pyramid] copy cache files now. view : ${files.views.length} && static: ${files.static.length}`);
+  console.log(`${new Date}: [pyramid] copy cache files now. view : ${files.views.length} && static: ${files.static.length}`);
   try{
     let result = await Promise.all([createDir(options.viewPath),createDir(options.staticPath)]);
     let arrPaths = await Promise.all([copyFiles(files.views , options.viewPath),copyFiles(files.static , options.staticPath)]);
@@ -144,19 +140,64 @@ async function copyFilesToDist(options , files){
     return error;
   }
 }
+/**
+ * [rmdir 移除缓存目录]
+ * @param  {[type]} dir [description]
+ * @return {[type]}     [description]
+ */
+function rmdir(dir){
+  console.log(`${new Date}: [pyramid] clear cache dir ${dir}`);
+  return new Promise((resolve , reject)=>{
+    rimraf(dir , (error)=>{
+      return error ? reject(error) : resolve(true); 
+    });
+  });
+}
+/**
+ * [clearCacheDir 清除缓存文件]
+ * @param  {[type]} options [description]
+ * @return {[type]}         [description]
+ */
+async function clearCacheDir(options , files){
+  console.log(`${new Date}: [pyramid] clear cache dir now. you set autoClear [${options.autoClear}]`);
+  try{
+    if ( options.autoClear ){
+      let result = await rmdir(options.cache);
+      console.log(`${new Date}: [pyramid] clear cache dir success.`);
+    }
+  }catch(error){
+    console.log(`${new Date}: [pyramid] clear cache dir error.` , error);
+  }
+  return files;
+}
 
+function choiceRunWay(options , articles){
+  console.log(`${new Date}: [pyramid] run webpack ? ${!!options.webpack}`);
+  if ( !options.webpack ){
+    console.log(`${new Date}: [pyramid] only return articles. ${articles.length}`);
+    return articles;
+  }
+  return webpackRun(options , articles)
+    .then(getCacheFiles.bind(this,options))
+    .then(copyFilesToDist.bind(this,options))
+    .then(clearCacheDir.bind(this,options));
+}
+
+/**
+ * [pyramid 博客数据统计]
+ * @param  {[type]} options [description]
+ * @return {[type]}         [description]
+ */
 module.exports = function( options = config ){
   console.log(`${new Date}: [pyramid] build start in ${process.cwd()}`);
   let md5 = crypto.createHash('md5');
   let cache = md5.update(process.cwd()).digest('hex');
   options = Object.assign({} , config , options);
   options.webpack = !!options.webpack;
-  options.url = options.url || '';
+  options.url = options.url || './';
   options.cache = path.resolve(__dirname , `./dist/${options.cache || cache}`);
   return pyramid(options)
-    .then(webpackRun.bind(this,options))
-    .then(getCacheFiles.bind(this,options))
-    .then(copyFilesToDist.bind(this,options))
+    .then(choiceRunWay.bind(this , options))
     .catch((error)=>{
       console.error(`${new Date}: [pyramid] throw error.`);
       console.error(error);
