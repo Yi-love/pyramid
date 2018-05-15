@@ -1,14 +1,21 @@
 'use strict';
-import {lineChart , areaChart , radialChart} from 'tui-chart';
+import {lineChart , columnChart , pieChart , areaChart , radialChart} from 'tui-chart';
 
 import './index.scss';
 import './tui-chart.css'; //先这样解决
 
 import {
   getYearsArticlesData , getMonthsArticlesData ,
-  getYearsCategoriesData , getAuthorArticlesData,
-  getAuthorCategoryData} from '../render';
+  getYearsCategoriesData , getAllCategoryData , 
+  getAuthorArticlesData , getAuthorCategoryData,
+  getAuthorAllArticlesData , getYearsTotalArticlesData } from '../render';
 
+/**
+ * [css 获取css]
+ * @param  {[type]} dom  [description]
+ * @param  {[type]} attr [description]
+ * @return {[type]}      [description]
+ */
 function css(dom , attr) {
   return window.getComputedStyle(dom)[attr];
 }
@@ -34,8 +41,24 @@ let options = {
   }
 };
 
-lineChart(document.getElementById('all-years'), getYearsArticlesData() , Object.assign(options , {xAxis:{title:'Year'}}));
-lineChart(document.getElementById('all-months'), getMonthsArticlesData() , Object.assign(options , {xAxis:{title:'Month'}}));
-lineChart(document.getElementById('category-years'), getYearsCategoriesData() , Object.assign(options , {xAxis:{title:'Year'}}));
-areaChart(document.getElementById('all-authors'), getAuthorArticlesData() , Object.assign(options , {chart:{width: COMMON_WIDTH , height: 660} , xAxis:{title:'Month'}}));
-radialChart(document.getElementById('author-categories'), getAuthorCategoryData() , Object.assign(options , {xAxis:{title:'分类'} , plot: { type: 'circle'}}));
+function format(){
+  return  function(value, chartType, areaType, valuetype, legendName) {
+    if (areaType === 'makingSeriesLabel') { // formatting at series area
+      value = value + '篇';
+    }
+    return value;
+  }
+}
+
+lineChart(document.getElementById('all-years'), getYearsArticlesData() , Object.assign({} , options , {xAxis:{title:'Year'} , series:{showDot: false,zoomable: true}}));
+lineChart(document.getElementById('all-articles-years'), getYearsTotalArticlesData() , Object.assign({} , options , {xAxis:{title:'Year'} , series:{showDot: false,zoomable: true}}));
+columnChart(document.getElementById('all-months'), getMonthsArticlesData() , Object.assign({} ,options , {xAxis:{title:'Month'}}));
+columnChart(document.getElementById('category-years'), getYearsCategoriesData() , Object.assign({} ,options , {xAxis:{title:'Year'}}));
+pieChart(document.getElementById('all-categories'), getAllCategoryData() , Object.assign({} ,options , {chart:{width: COMMON_WIDTH , height: 800 , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
+areaChart(document.getElementById('all-authors'), getAuthorArticlesData() , Object.assign({} , options , {chart:{width: COMMON_WIDTH , height: 660} , xAxis:{title:'Month'}}));
+radialChart(document.getElementById('author-categories'), getAuthorCategoryData() , Object.assign({} , options , {chart:{width: COMMON_WIDTH , height: 660} , xAxis:{title:'分类'} , plot: { type: 'circle'}}));
+pieChart(document.getElementById('author-articles'), getAuthorAllArticlesData() , Object.assign({} ,options , {chart:{width: COMMON_WIDTH , height: 800 , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
+
+
+
+

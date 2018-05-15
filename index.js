@@ -19,16 +19,14 @@ const treeWorker = new TreeWorker();
  */
 function webpackRun(options , articles){
   console.log(`${new Date}: [pyramid] run webpack start with mode [${options.mode}] !!! please waiting.....`);
-  return new Promise((resolve , reject)=>{
-    webpack(webpackConfig(options , articles) , (error, stats)=>{
+    return webpack(webpackConfig(options , articles) , (error, stats)=>{
       if ( error || stats.hasErrors() ) {
         console.error(new Date , ': [pyramid] run webpack is error ' , error || stats);
-        return reject(error||stats);
+        return Promise.reject(error||stats);
       }
       console.log(`${new Date}: [pyramid] run webpack is success!!!`);
-      return resolve(articles);
+      return moveCacheFiles(options , articles);
     });
-  });
 }
 /**
  * [filtersFile 过滤文件]
@@ -93,7 +91,12 @@ function copyFile(source , dist){
     rr.pipe(ww);
   });
 }
-
+/**
+ * [copyFiles 复制文件s]
+ * @param  {Array}  files [description]
+ * @param  {[type]} dist  [description]
+ * @return {[type]}       [description]
+ */
 async function copyFiles(files = [] ,dist){
   let arr = [];
   for ( let i = 0 ; i < files.length ; i++ ){
@@ -109,8 +112,13 @@ async function copyFiles(files = [] ,dist){
   }
   return arr;
 }
+/**
+ * [createDir 创建目录]
+ * @param  {[type]} dirName [description]
+ * @return {[type]}         [description]
+ */
 function createDir(dirName){
-  console.log(`${new Date}: [pyramid] create dir now. view : ${dirName}`);
+  console.log(`${new Date}: [pyramid] create dir now. dirName : ${dirName}`);
   
   return new Promise((resolve , reject)=>{
     fs.mkdir(dirName , (error)=>{
@@ -171,16 +179,31 @@ async function clearCacheDir(options , files){
   return files;
 }
 
-function choiceRunWay(options , articles){
-  console.log(`${new Date}: [pyramid] run webpack ? ${!!options.webpack}`);
-  if ( !options.webpack ){
-    console.log(`${new Date}: [pyramid] only return articles. ${articles.length}`);
-    return articles;
-  }
-  return webpackRun(options , articles)
+/**
+ * [moveCacheFiles 移动文件]
+ * @param  {[type]} options  [description]
+ * @param  {[type]} articles [description]
+ * @return {[type]}          [description]
+ */
+function moveCacheFiles(options , articles){
+  return Promise.resolve(articles)
     .then(getCacheFiles.bind(this,options))
     .then(copyFilesToDist.bind(this,options))
     .then(clearCacheDir.bind(this,options));
+};
+/**
+ * [isRunWebpack 是否需要webpack]
+ * @param  {[type]} options  [description]
+ * @param  {[type]} articles [description]
+ * @return {[type]}          [description]
+ */
+function isRunWebpack(options , articles){
+  console.log(`${new Date}: [pyramid] run webpack ? ${!!options.webpack}`);
+  if ( !options.webpack ){
+    console.log(`${new Date}: [pyramid] only return articles. ${articles.length}`);
+    return Promise.resolve(articles);
+  }
+  return webpackRun(options , articles);
 }
 
 /**
@@ -196,12 +219,6 @@ module.exports = function( options = config ){
   options.webpack = !!options.webpack;
   options.url = options.url || './';
   options.cache = path.resolve(__dirname , `./dist/${options.cache || cache}`);
-  return pyramid(options)
-    .then(choiceRunWay.bind(this , options))
-    .catch((error)=>{
-      console.error(`${new Date}: [pyramid] throw error.`);
-      console.error(error);
-      return error;
-    });
+  return pyramid(options).then(isRunWebpack.bind(this , options));
 };
 

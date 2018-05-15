@@ -2,7 +2,8 @@ import {
   getYearsArticles , getMonthsArticles ,
   getYearsCategories , getAllCategory ,
   getAuthorArticles , getAllMonths ,
-  getAuthorCategory} from '../lib';
+  getAuthorCategory , getArticlesByCategory ,
+  getAllArticles } from '../lib';
 
 export function getYearsArticlesData() {
   let yearsArticles = getYearsArticles();
@@ -21,6 +22,34 @@ export function getYearsArticlesData() {
 
   for ( let i = 0 ; i < categories.length ; i++ ){
     series.data.push(yearsArticles[categories[i]]);
+  }
+  return {
+    categories: categories,
+    series: [series]
+  };
+};
+
+export function getYearsTotalArticlesData() {
+  let yearsArticles = getYearsArticles();
+  console.log('getYearsArticles: ' , yearsArticles);
+  
+  let categories = [];
+  for ( let year in yearsArticles ){
+    categories.push(year);
+  }
+  categories.sort((a,b)=>a - b);
+
+  let series = {
+    name: 'total articles',
+    data: []
+  };
+
+  for ( let i = 0 ; i < categories.length ; i++ ){
+    if ( i === 0 ){
+      series.data.push(yearsArticles[categories[i]]);
+    }else{
+      series.data.push(yearsArticles[categories[i]] + series.data[i - 1]);
+    }
   }
   return {
     categories: categories,
@@ -47,7 +76,7 @@ export function getMonthsArticlesData() {
   }
   return {
     categories: [1,2,3,4,5,6,7,8,9,10,11,12],
-    series: series
+    series
   };
 };
 
@@ -75,7 +104,27 @@ export function getYearsCategoriesData(){
   }
   return {
     categories: years,
-    series: series
+    series
+  };
+};
+
+export function getAllCategoryData(){
+  let categories = getAllCategory();
+  let allArticles = getAllArticles();
+  console.log('getAllCategory: ' , categories);
+  console.log('getAllArticles: ' , allArticles);
+
+  let series = [];
+
+  for ( let i = 0 ; i < categories.length ; i++ ){
+    series.push({
+      name: categories[i],
+      data: getArticlesByCategory(categories[i]).length
+    });
+  }
+  return {
+    categories: ['文章分类'],
+    series
   };
 };
 
@@ -107,5 +156,29 @@ export function getAuthorCategoryData(){
   return {
     categories,
     series: authorCategories
+  };
+};
+
+export function getAuthorAllArticlesData(){
+  let authorArticles = getAuthorArticles();
+
+  console.log('getAuthorArticles: ' , authorArticles);
+
+  let series = [];
+  
+  for ( let i = 0 ; i < authorArticles.length ; i++ ){
+    series.push({
+      name: authorArticles[i].name,
+      data: 0
+    });
+
+    for ( let j = 0 ; j < authorArticles[i].data.length ; j ++ ){
+      series[i].data += authorArticles[i].data[j];
+    }
+  }
+
+  return {
+    categories: ['全部文章'],
+    series
   };
 };

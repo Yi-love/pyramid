@@ -76,7 +76,7 @@ module.exports = function(options , articles = []){
             new HtmlWebpackPlugin({
                 inject: true,
                 filename: options.filename,
-                blogName: options.blogName || '',
+                blogName: options.blogName,
                 chunks: ['tui-chart' , 'pyramid'],
                 template: path.resolve(__dirname , './client/index.html')
             }),

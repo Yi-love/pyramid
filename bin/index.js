@@ -10,9 +10,20 @@ if ( process.argv.length === 3 && process.argv[2] ) {
 
 console.log(`${new Date} [pyramid] want use config file: ${config}`);
 
+const options;
 try{
-  const options = require(config);
-  pyramid(options);
+   options = require(config);
 }catch(error){
   console.error(`${new Date} [pyramid] ci is error. ` , error);
+  return exit(1);
 }
+
+pyramid(options).catch((error)=>{
+  console.error(`${new Date}: [pyramid] throw error.`);
+  console.error(error);
+  if ( options.strict ){
+    console.error(`${new Date}: [pyramid] exit 1 . ${options.strict}`);
+    return exit(1);
+  }
+  return error;
+});
