@@ -13,6 +13,11 @@ module.exports = function(options , articles = []){
         entry:{
             pyramid:path.resolve(__dirname , './client/index.js')
         },
+        resolve:{
+            alias: {
+                'tui-chart-css' : path.resolve(__dirname , 'node_modules/tui-chart/dist/tui-chart.css')
+            }
+        },
         module:{
             rules:[
             {
