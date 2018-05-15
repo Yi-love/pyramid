@@ -22,7 +22,7 @@ function webpackRun(options , articles){
   return new Promise((resolve , reject)=>{
     webpack(webpackConfig(options , articles) , (error, stats)=>{
       if ( error || stats.hasErrors() ) {
-        console.error(new Date , ': [pyramid] run webpack is error ' , err || stats);
+        console.error(new Date , ': [pyramid] run webpack is error ' , error || stats);
         return reject(error||stats);
       }
       console.log(`${new Date}: [pyramid] run webpack is success!!!`);
