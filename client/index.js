@@ -2,7 +2,7 @@
 import {lineChart , areaChart , radialChart} from 'tui-chart';
 
 import './index.scss';
-import 'tui-chart-css';
+import './tui-chart.css'; //先这样解决
 
 import {
   getYearsArticlesData , getMonthsArticlesData ,

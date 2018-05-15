@@ -1,6 +1,6 @@
 {
   "name": "@cray/pyramid",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Statistics your blog data.",
   "main": "index.js",
   "dependencies": {
