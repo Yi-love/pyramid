@@ -10,7 +10,7 @@ if ( process.argv.length === 3 && process.argv[2] ) {
 
 console.log(`${new Date} [pyramid] want use config file: ${config}`);
 
-const options;
+let options;
 try{
    options = require(config);
 }catch(error){

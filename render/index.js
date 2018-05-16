@@ -139,7 +139,6 @@ export function getMonthsTotalArticlesData() {
       series[i].data += monthsArticles[year][i];
     }
   }
-  console.log(series);
   return {
     categories: 'total articles',
     series
