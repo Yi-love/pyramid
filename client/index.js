@@ -52,16 +52,16 @@ function format(){
 }
 
 lineChart(document.getElementById('all-years'), getYearsArticlesData() , Object.assign({} , options , {xAxis:{title:'Year'} , series:{showDot: false,zoomable: true}}));
-pieChart(document.getElementById('articles-years'), getAllYearsArticlesData() , Object.assign({} ,options , {chart:{width: COMMON_WIDTH , height: COMMON_HEIGHT , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
+pieChart(document.getElementById('articles-years'), getAllYearsArticlesData() , Object.assign({} ,options , {tooltip: {} , chart:{width: COMMON_WIDTH , height: COMMON_HEIGHT , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
 lineChart(document.getElementById('all-articles-years'), getYearsTotalArticlesData() , Object.assign({} , options , {xAxis:{title:'Year'} , series:{showDot: false,zoomable: true}}));
 columnChart(document.getElementById('year-all-months'), getMonthsArticlesData() , Object.assign({} ,options , {xAxis:{title:'Month'}}));
 lineChart(document.getElementById('all-months'), getAllMonthsArticlesData() , Object.assign({} , options , {xAxis:{title:'Month'} , series:{showDot: false,zoomable: true}}));
-pieChart(document.getElementById('month-articles'), getMonthsTotalArticlesData() , Object.assign({} ,options , {chart:{width: COMMON_WIDTH , height: COMMON_HEIGHT , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
+pieChart(document.getElementById('month-articles'), getMonthsTotalArticlesData() , Object.assign({} ,options , {tooltip: {} , chart:{width: COMMON_WIDTH , height: COMMON_HEIGHT , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
 columnChart(document.getElementById('category-years'), getYearsCategoriesData() , Object.assign({} ,options , {xAxis:{title:'Year'}}));
-pieChart(document.getElementById('all-categories'), getAllCategoryData() , Object.assign({} ,options , {chart:{width: COMMON_WIDTH , height: 800 , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
+pieChart(document.getElementById('all-categories'), getAllCategoryData() , Object.assign({} ,options , {tooltip: {} , chart:{width: COMMON_WIDTH , height: 800 , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
 areaChart(document.getElementById('all-authors'), getAuthorArticlesData() , Object.assign({} , options , {chart:{width: COMMON_WIDTH , height: 660} , xAxis:{title:'Month'}}));
 radialChart(document.getElementById('author-categories'), getAuthorCategoryData() , Object.assign({} , options , {chart:{width: COMMON_WIDTH , height: 660} , xAxis:{title:'分类'} , plot: { type: 'circle'}}));
-pieChart(document.getElementById('author-articles'), getAuthorAllArticlesData() , Object.assign({} ,options , {chart:{width: COMMON_WIDTH , height: 800 , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
+pieChart(document.getElementById('author-articles'), getAuthorAllArticlesData() , Object.assign({} ,options , {tooltip: {} , chart:{width: COMMON_WIDTH , height: 800 , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
 
 
 
