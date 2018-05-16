@@ -89,6 +89,22 @@ next ... cmd:
 pyramid [configPath]
 ```
 
+if travis CI thorw error:
+
+```js
+ERROR in ./node_modules/tui-chart/dist/tui-chart.css
+Module build failed: ModuleBuildError: Module build failed: Error: No PostCSS Config found in: /home/travis/build/futuweb/futu.im/node_modules/tui-chart/dist
+    at /home/travis/build/futuweb/futu.im/node_modules/postcss-load-config/index.js:51:26
+    at runLoaders (/home/travis/build/futuweb/futu.im/node_modules/webpack/lib/NormalModule.js:252:20)
+    at /home/travis/build/futuweb/futu.im/node_modules/loader-runner/lib/LoaderRunner.js:364:11
+    at /home/travis/build/futuweb/futu.im/node_modules/loader-runner/lib/LoaderRunner.js:230:18
+    at context.callback (/home/travis/build/futuweb/futu.im/node_modules/loader-runner/lib/LoaderRunner.js:111:13)
+    at Promise.resolve.then.then.catch (/home/travis/build/futuweb/futu.im/node_modules/postcss-loader/lib/index.js:194:71)
+ @ ./node_modules/@cray/pyramid/client/index.js 5:0-38
+ ```
+ 
+ please add `postcss.config.js`
+
 ### 3. require
 
 ```js
