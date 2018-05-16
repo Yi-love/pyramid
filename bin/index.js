@@ -2,6 +2,8 @@
 
 const path = require('path');
 const pyramid = require('../index');
+const configDef = require('../pyramid.config');
+
 let config = path.resolve(process.cwd() , 'pyramid.config.js');
 
 if ( process.argv.length === 3 && process.argv[2] ) {
@@ -17,6 +19,8 @@ try{
   console.error(`${new Date} [pyramid] ci is error. ` , error);
   return exit(1);
 }
+
+options = Object.assign({} , configDef , options);
 
 pyramid(options).catch((error)=>{
   console.error(`${new Date}: [pyramid] throw error.`);
