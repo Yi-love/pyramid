@@ -8,7 +8,9 @@ import {
   getYearsArticlesData , getMonthsArticlesData ,
   getYearsCategoriesData , getAllCategoryData , 
   getAuthorArticlesData , getAuthorCategoryData,
-  getAuthorAllArticlesData , getYearsTotalArticlesData } from '../render';
+  getAuthorAllArticlesData , getYearsTotalArticlesData,
+  getAllYearsArticlesData , getMonthsTotalArticlesData ,
+  getAllMonthsArticlesData } from '../render';
 
 /**
  * [css 获取css]
@@ -33,7 +35,6 @@ let options = {
     pointOnColumn: true
   },
   series: {
-    spline: true,
     showDot: false 
   },
   tooltip: {
@@ -51,8 +52,11 @@ function format(){
 }
 
 lineChart(document.getElementById('all-years'), getYearsArticlesData() , Object.assign({} , options , {xAxis:{title:'Year'} , series:{showDot: false,zoomable: true}}));
+pieChart(document.getElementById('articles-years'), getAllYearsArticlesData() , Object.assign({} ,options , {chart:{width: COMMON_WIDTH , height: COMMON_HEIGHT , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
 lineChart(document.getElementById('all-articles-years'), getYearsTotalArticlesData() , Object.assign({} , options , {xAxis:{title:'Year'} , series:{showDot: false,zoomable: true}}));
-columnChart(document.getElementById('all-months'), getMonthsArticlesData() , Object.assign({} ,options , {xAxis:{title:'Month'}}));
+columnChart(document.getElementById('year-all-months'), getMonthsArticlesData() , Object.assign({} ,options , {xAxis:{title:'Month'}}));
+lineChart(document.getElementById('all-months'), getAllMonthsArticlesData() , Object.assign({} , options , {xAxis:{title:'Month'} , series:{showDot: false,zoomable: true}}));
+pieChart(document.getElementById('month-articles'), getMonthsTotalArticlesData() , Object.assign({} ,options , {chart:{width: COMMON_WIDTH , height: COMMON_HEIGHT , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
 columnChart(document.getElementById('category-years'), getYearsCategoriesData() , Object.assign({} ,options , {xAxis:{title:'Year'}}));
 pieChart(document.getElementById('all-categories'), getAllCategoryData() , Object.assign({} ,options , {chart:{width: COMMON_WIDTH , height: 800 , format: format()} , series: {radiusRange: ['40%', '100%'] ,showLegend: true,showLabel: true,labelAlign: 'outer'}}));
 areaChart(document.getElementById('all-authors'), getAuthorArticlesData() , Object.assign({} , options , {chart:{width: COMMON_WIDTH , height: 660} , xAxis:{title:'Month'}}));

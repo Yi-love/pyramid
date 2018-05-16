@@ -10,24 +10,34 @@
 </head>
 <body>
   <div class="row body-container" id="body-container">
-    <h2><%= htmlWebpackPlugin.options.blogName %>博客数据统计报告</h2>
+    <h2 class="pyramid-title"><%= htmlWebpackPlugin.options.blogName %>博客数据统计报告</h2>
   
-    <h3>年度数据</h3>
+    <h3>1. 年度数据</h3>
     <div id="all-years"></div>
-    <h3>年度累计数据</h3>
+    <h3>2. 年度文章数据</h3>
+    <div id="articles-years"></div>
+    <h3>3. 年度累计数据</h3>
     <div id="all-articles-years"></div>
-    <h3>月度数据</h3>
+    <h3>4. 全年月度数据</h3>
+    <div id="year-all-months"></div>
+    <h3>5. 全部月度数据</h3>
     <div id="all-months"></div>
-    <h3>年度分类数据</h3>
+    <h3>6. 月度累计数据</h3>
+    <div id="month-articles"></div>
+    <h3>7. 年度分类数据</h3>
     <div id="category-years"></div>
-    <h3>分类数据</h3>
+    <h3>8. 分类数据</h3>
     <div id="all-categories"></div>
-    <h3>作者月度数据</h3>
+    <h3>9. 作者月度数据</h3>
     <div id="all-authors"></div>
-    <h3>作者文章分类数据</h3>
+    <h3>10. 作者文章分类数据</h3>
     <div id="author-categories"></div>
-    <h3>作者文章统计数据</h3>
+    <h3>11. 作者文章统计数据</h3>
     <div id="author-articles"></div>
+
+    <footer>
+      <div class="row pyramid-footer">统计数据技术支持由 <a href="https://github.com/Yi-love/pyramid" target="_blank">@Cray/pyramid</a> 提供</div>
+    </footer>
   </div>
 </body>
 </html>

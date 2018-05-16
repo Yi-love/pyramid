@@ -3,7 +3,7 @@ import {
   getYearsCategories , getAllCategory ,
   getAuthorArticles , getAllMonths ,
   getAuthorCategory , getArticlesByCategory ,
-  getAllArticles } from '../lib';
+  getAllArticles , getArticlesByYearAndMonth} from '../lib';
 
 export function getYearsArticlesData() {
   let yearsArticles = getYearsArticles();
@@ -26,6 +26,30 @@ export function getYearsArticlesData() {
   return {
     categories: categories,
     series: [series]
+  };
+};
+
+export function getAllYearsArticlesData() {
+  let yearsArticles = getYearsArticles();
+  console.log('getYearsArticles: ' , yearsArticles);
+  
+  let categories = [];
+  for ( let year in yearsArticles ){
+    categories.push(year);
+  }
+  categories.sort((a,b)=>a - b);
+
+  let series = [];
+
+  for ( let i = 0 ; i < categories.length ; i++ ){
+    series.push({
+      name: categories[i],
+      data: yearsArticles[categories[i]]
+    });
+  }
+  return {
+    categories: 'total articles',
+    series
   };
 };
 
@@ -76,6 +100,48 @@ export function getMonthsArticlesData() {
   }
   return {
     categories: [1,2,3,4,5,6,7,8,9,10,11,12],
+    series
+  };
+};
+
+export function getAllMonthsArticlesData() {
+  let months = getAllMonths();
+  console.log('getAllMonths: ' , months);
+
+  let series = {
+    name: 'all months',
+    data: []
+  };
+  let categories = [];
+  for ( let i = 0 ; i < months.length ; i ++ ){
+    categories.push('' + (months[i].month < 10 ? '0' + months[i].month : months[i].month) + '/' + months[i].year);
+    series.data.push(getArticlesByYearAndMonth(months[i].year , months[i].month).length);
+  }
+
+  return {
+    categories,
+    series: [series]
+  };
+};
+
+export function getMonthsTotalArticlesData() {
+  let monthsArticles = getMonthsArticles();
+  console.log('getMonthsArticles: ' , monthsArticles);
+  
+  let series = [];
+
+  for ( let i = 0 ; i < 12 ; i++ ){
+    series.push({
+      name: '' + (i + 1) + '月',
+      data: 0
+    });
+    for ( let year in monthsArticles ){
+      series[i].data += monthsArticles[year][i];
+    }
+  }
+  console.log(series);
+  return {
+    categories: 'total articles',
     series
   };
 };

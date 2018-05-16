@@ -40,6 +40,7 @@ const path = require('path');
 
 module.exports = {
   root: 'E:\\git\\yi-love.github.io\\_posts', //bolg markdown file path
+  strict: true, // if error exit 1   .. only ci
   extensions: [],  //ext file want read
   encoding: 'utf-8', //file encode
   author:'',  //no author file can set author default `Owner`
